@@ -1,0 +1,20 @@
+doctype
+html
+  head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    title GMail Notifier
+    meta(name='description', content='Sample GMail Notifier')
+    meta(name='viewport', content='width=device-width, initial-scale=1, user-scalable=no')
+  body
+    - if (user && user.accessToken)
+      p
+        | You are successfully logged in.
+        strong= "Access Token: "
+        pre= user.accessToken
+        strong= "Refresh Token: "
+        pre= user.refreshToken
+    - else
+      p You are not logged in.  Click <a href="/auth/google">here</a> to log in via Google.
+
+        

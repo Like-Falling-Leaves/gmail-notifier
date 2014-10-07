@@ -1,0 +1,32 @@
+{
+  "name": "gmail-notifier",
+  "description": "Notify when a new mail arrives from gmail",
+  "keywords": ["gmail", "notification", "xmpp", "hook", "mail"],
+  "homepage": "https://github.com/like-falling-leaves/gmail-notifier",
+  "bugs": { "url": "https://github.com/like-falling-leaves/gmail-notifier/issues" },
+  "license": "MIT",
+  "author": {"name": "Like FallingLeaves", "email": "likefallingleaves@gmail.com"},
+  "main": "./notifier.js",
+  "maintainers": [{"name": "Like FallingLeaves", "email": "likefallingleaves@gmail.com"}],
+  "version": "0.0.1",
+  "repository": { "type": "git", "url": "git://github.com/like-falling-leaves/gmail-notifier.git" },
+  "readmeFilename": "README.md",
+  "dependencies": { 
+    "node-gmail-api" : "~0.2.3",
+    "node-stringprep": "~0.6.0",
+    "node-xmpp-client": "~1.0.0",
+    "node-xmpp-core": "~1.0.0",
+    "request": "~2.0.0"
+  },
+  "devDependencies": {
+    "mocha": "1.*",
+    "body-parser": "~1.9.0",
+    "connect-redis": "~2.1.0",
+    "express": "~4.9.5",
+    "express-session": "~1.8.2",
+    "jade": "~1.7.0",
+    "passport": "~0.2.1",
+    "passport-google-oauth": "~0.1.5"
+  },
+  "scripts": {}
+}
