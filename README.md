@@ -46,6 +46,8 @@ You start the app via:
 
 Note that the app requires a bunch of environment variables.  In particular, make sure that the callback URL provided in the environment variable matches the one configured in the Google API Console.
 
+Note also that the refresh tokens are only provided vai the OAuth2 flow the first time a user is authorized. So, if you use the web app provided to fetch the tokens, you should copy the refresh tokens down.  While they are stored in the redis session, this expires at some point and it then becomes difficult to fetch new refresh tokens via this mechanism.
+
 ### Unique mail label
 
 When XMPP notifications arrive, the module reads the recent mails from GMail.  To make sure that the same mails don't get read twice in a row, it marks the mails with a label.
