@@ -13,7 +13,7 @@ function getFreshToken(refreshToken, done) {
   if (tokenInfo.pending.length > 1) return;
   var form = JSON.parse(JSON.stringify(params));
   form.refresh_token = refreshToken;
-  request({method: 'POST', url: 'https://accounts.google.com/o/oauth2/token', form: form}, onResponse);
+  request.post({url: 'https://accounts.google.com/o/oauth2/token', form: form}, onResponse);
   function onResponse(err, response, body) {
     if (err) return complete(err);
     try {
