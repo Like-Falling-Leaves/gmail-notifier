@@ -2,6 +2,7 @@ var parseReply = require('parse-reply');
 var html2text = require('html-to-text').fromString;
 var fetchAttachment = require('./fetchAttachment');
 var emailRE = new RegExp(parseReply.emailRE, 'i');
+var emailsRE = new RegExp(parseReply.emailRE, 'ig');
 
 module.exports = simplifyMail;
 
@@ -10,11 +11,16 @@ function simplifyMail(accessToken, mm, done) {
   delete mm.payload;
   payload.headers.forEach(function (hh) {
     if (hh.name.toLowerCase() == 'from') mm.from = hh.value;
-    if (hh.name.toLowerCase() == 'to') mm.to = hh.value;
-    if (hh.name.toLowerCase() == 'subject') mm.subject = hh.value;
+    else if (hh.name.toLowerCase() == 'to') mm.to = hh.value;
+    else if (hh.name.toLowerCase() == 'cc') mm.cc = hh.value;
+    else if (hh.name.toLowerCase() == 'subject') mm.subject = hh.value;
+    else if (hh.name.toLowerCase() == 'message-id') mm.smtpMessageID = hh.value;
+    else if (hh.name.toLowerCase() == 'in-reply-to') mm.smtpInReplyTo = hh.value.split(/\s+/);
+    else if (hh.name.toLowerCase() == 'references') mm.smtpReferences = hh.value.split(/\s+/);
   });
   mm.fromEmail = scrapeEmail(mm.from);
-  mm.toEmail = scrapeEmail(mm.to);
+  mm.toEmails = scrapeEmails(mm.to);
+  mm.ccEmail = scrapeEmails(mm.cc);
   mm.origBody = payload.body;
   mm.files = [];
   mm.unknownParts = [];
@@ -53,7 +59,11 @@ function fetchAttachments(accessToken, mm, attachments, done) {
 }
 
 function scrapeEmail(src) {
-  var mm = src.match(emailRE);
+  var mm = src.toLowerCase().match(emailRE);
   if (mm) return mm[0];
   return '';
+}
+
+function scrapeEmails(src) {
+  return (src || '').toLowerCase().match(emailsRE) || [];
 }
