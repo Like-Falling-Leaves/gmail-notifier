@@ -8,7 +8,7 @@
   "author": {"name": "Like FallingLeaves", "email": "likefallingleaves@gmail.com"},
   "main": "./notifier.js",
   "maintainers": [{"name": "Like FallingLeaves", "email": "likefallingleaves@gmail.com"}],
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": { "type": "git", "url": "git://github.com/like-falling-leaves/gmail-notifier.git" },
   "readmeFilename": "README.md",
   "dependencies": { 
@@ -16,7 +16,9 @@
     "node-stringprep": "~0.6.0",
     "node-xmpp-client": "~1.0.0",
     "node-xmpp-core": "~1.0.0",
-    "request": "~2.45.0"
+    "request": "~2.45.0",
+    "parse-reply": "~0.0.4",
+    "html-to-text": "~0.1.0"
   },
   "devDependencies": {
     "mocha": "1.*",

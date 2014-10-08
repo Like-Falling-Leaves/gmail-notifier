@@ -13,7 +13,7 @@ This module has been tested under limited scenarios.  If you find any issues, pl
 
 ## API
 
-```
+```javascript
    var notify = require('gmail-notifier');
    notify(oauthRefreshToken)
     .on('newmails', function onNewMails(mails) {
@@ -63,3 +63,28 @@ This label is named *gmailnotify*.  If you want to bypass this logic or provide 
 ```
 
 If you are looking for a module to read mails from gmail, take a look at [node-gmail-api](https://npmjs.org/package/node-gmail-api) which is a very simple interface to gmail.
+
+### Simplified mails
+
+If you do not want to deal with the full complexity of the GMail message bodies and only want a simplified version, you can do the following which uses [parse-reply](https://npmjs.org/package/parse-reply) to remove any forwarded or replied parts from the email and converts HTML to plain text via [html-to-text](https://npmjs.org/package/html-to-text).
+
+
+```javascript
+   var notify = require('gmail-notifier');
+   var notifier = notify(oauthRefreshToken)
+    .on('newmails', function onNewMails(mails) {
+      // if you want gmail-notifier to simplify the mails do:
+      notifier.emit('simplify-emails', mails);
+    })
+    .on('simplified-email', function (info) {
+      // this event will only happen in response to any emails triggered via the 'simplify-emails' event.
+      // each info will have {error: 'any error', mail: 'simplified mail'} fields.
+      // in case of error, the mail field will reflect the original complex mail.
+      // Please file an issue against this project with a copy of the <mail> argument in that case
+      // and I'll figure out how to summarize that specific mail.
+      // Also note that mail.snippet will still be available.
+    })
+    .on('error', function (err) {
+      // something went wrong.
+    });
+```

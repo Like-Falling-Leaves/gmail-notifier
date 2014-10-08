@@ -5,9 +5,11 @@ var EventEmitter = require('events').EventEmitter;
 var getFreshToken = require('./getFreshToken');
 var newMailsQueue = require('./newMailsQueue');
 var getEmail = require('./getEmail');
+var simplifyMail = require('./simplifyMail');
 
 function fetchAndHandleNotifications(refreshToken) {
   var ret = new EventEmitter();
+  var mailsToSimplify = [];
   var queue = newMailsQueue(ret, refreshToken);
 
   getFreshToken(refreshToken, function (err, accessToken) {
@@ -18,7 +20,12 @@ function fetchAndHandleNotifications(refreshToken) {
     });
   });
 
-  return ret.on('read-emails', function (info) { if (!info.stop) queue.readMore(); });
+  return ret.on('read-emails', function (info) { if (!info.stop) queue.readMore(); })
+    .on('simplify-emails', function (mails) {
+      var initLength = mailsToSimplify.length;
+      mailsToSimplify = mailsToSimplify.concat(mails || []);
+      if (!initLength) startSimplifying();
+    });
 
   function startXMPP(accessToken, emailId) {
     var params = {jid: emailId, host: 'talk.google.com', port: 5222, oauth2_token: accessToken};
@@ -49,6 +56,21 @@ function fetchAndHandleNotifications(refreshToken) {
       return getReplyStanza(stanza);
     }
   }
+
+  function startSimplifying() {
+    if (!mailsToSimplify.length) return;
+    getFreshToken(refreshToken, function (err, accessToken) {
+      if (err) return complete(err);
+      simplifyMail(accessToken, mailsToSimplify[0], function (err, _simplified) {
+        return complete(err);
+      });
+    });
+
+    function complete(err) {
+      ret.emit('simplified-email', {error: err, mail: mailsToSimplify.shift()});
+      startSimplifying();
+    }
+  }
 }
 
 function getEnableMailNotificationsStanza(jid) {
@@ -75,7 +97,7 @@ function main() {
   if (!process.env.GAPI_SECRET) return console.error('Please set environment value GAPI_SECRET');
   if (!process.env.GAPI_REFRESH_TOKEN) return console.error('Please set environment value GAPI_REFRESH_TOKEN');
 
-  fetchAndHandleNotifications(process.env.GAPI_REFRESH_TOKEN)
+  var ff = fetchAndHandleNotifications(process.env.GAPI_REFRESH_TOKEN)
     .on('online', function (identity) { console.log('Logged in as', identity.jid); })
     .on('xmpp:newmail', function onXmppMail(info) {
       console.log('There was an XMPP notification for new mail');
@@ -83,12 +105,18 @@ function main() {
     .on('newmails', function onNewMails(mails) {
       console.log('Got new mails');
       mails.forEach(function (mm) { console.log(mm.id, mm.snippet); });
+      ff.emit('simplify-emails', mails);
+    })
+    .on('simplified-email', function (info) {
+      if (info.error) console.error('Simplification failed', JSON.stringify(info));
+      else console.log(JSON.stringify(info.mail, null, 2));
     })
     .on('error', function onError(err) {
       console.error('An error occured', err);
       process.exit(1);
-    })
-    .emit('read-emails', {});
+    });
+
+  ff.emit('read-emails', {});
 }
 
 if (require.main === module) main();

@@ -1,5 +1,4 @@
 var Gmail = require('node-gmail-api');
-var getFreshToken = require('./getFreshToken');
 var markMailNotified = require('./markMailNotified');
 
 module.exports = getNewMailsAndMarkModified;
