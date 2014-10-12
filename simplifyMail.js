@@ -7,7 +7,7 @@ var emailsRE = new RegExp(parseReply.emailRE, 'ig');
 module.exports = simplifyMail;
 
 function simplifyMail(accessToken, mm, done) {
-  var payload = mm.payload;
+  var payload = mm.payload || {};
   delete mm.payload;
   payload.headers.forEach(function (hh) {
     if (hh.name.toLowerCase() == 'from') mm.from = hh.value;
@@ -24,7 +24,7 @@ function simplifyMail(accessToken, mm, done) {
   mm.origBody = payload.body;
   mm.files = [];
   mm.unknownParts = [];
-  payload.parts.forEach(processPart);
+  (payload.parts || []).forEach(processPart);
 
   mm.htmlBodyAsText = parseReply(html2text(mm.htmlBody || '')).trim();
   if (mm.plainBody) mm.body = parseReply(mm.plainBody || '').trim();
