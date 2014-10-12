@@ -20,7 +20,7 @@ function simplifyMail(accessToken, mm, done) {
   });
   mm.fromEmail = scrapeEmail(mm.from);
   mm.toEmails = scrapeEmails(mm.to);
-  mm.ccEmail = scrapeEmails(mm.cc);
+  mm.ccEmails = scrapeEmails(mm.cc);
   mm.origBody = payload.body;
   mm.files = [];
   mm.unknownParts = [];
