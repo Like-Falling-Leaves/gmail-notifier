@@ -7,6 +7,8 @@ var newMailsQueue = require('./newMailsQueue');
 var getEmail = require('./getEmail');
 var simplifyMail = require('./simplifyMail');
 
+module.exports = fetchAndHandleNotifications;
+
 function fetchAndHandleNotifications(refreshToken) {
   var ret = new EventEmitter();
   var mailsToSimplify = [];
